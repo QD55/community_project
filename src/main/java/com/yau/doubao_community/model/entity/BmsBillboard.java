@@ -34,6 +34,6 @@ public class BmsBillboard implements Serializable {
 
     // 公告牌状态  1:展示中  0:过期
     @Builder.Default
-    @TableField("show")
+    @TableField("`show`")
     private boolean show = false;
 }
