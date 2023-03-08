@@ -7,16 +7,14 @@ import com.yau.doubao_community.model.dto.RegisterDTO;
 import com.yau.doubao_community.model.entity.UmsUser;
 import com.yau.doubao_community.service.IUmsUserService;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.yau.doubao_community.jwt.JwtUtil.USER_NAME;
 @RestController
 @RequestMapping("/ums/user")
 public class UmsUserController extends BaseController{
@@ -40,6 +38,11 @@ public class UmsUserController extends BaseController{
         return ApiResult.success(map);
     }
 
+    /**
+     * 用户登录
+     * @param dto
+     * @return
+     */
     @PostMapping("/login")
     public ApiResult<Map<String, String>> login(@Valid @RequestBody LoginDTO dto) {
         String token = iUmsUserService.executeLogin(dto);
@@ -48,6 +51,13 @@ public class UmsUserController extends BaseController{
         }
         Map<String, String> map = new HashMap<>(16);
         map.put("token", token);
-        return ApiResult.success(map, "登陆成功");
+        return ApiResult.success(map, "登录成功");
+    }
+
+    @GetMapping("/info")
+    public ApiResult<UmsUser> getUser(@RequestHeader(value = USER_NAME) String userName) {
+        System.out.println(userName);
+        UmsUser user = iUmsUserService.getUserByUsername(userName);
+        return ApiResult.success(user);
     }
 }
