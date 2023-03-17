@@ -1,7 +1,6 @@
 package com.yau.doubao_community.controller;
 
 import com.yau.doubao_community.common.api.ApiResult;
-import com.yau.doubao_community.common.exception.ApiAsserts;
 import com.yau.doubao_community.model.dto.LoginDTO;
 import com.yau.doubao_community.model.dto.RegisterDTO;
 import com.yau.doubao_community.model.entity.UmsUser;
