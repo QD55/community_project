@@ -8,9 +8,12 @@ import com.yau.doubao_community.model.entity.UmsUser;
 import com.yau.doubao_community.model.vo.PostVO;
 import com.yau.doubao_community.service.IBmsPostService;
 import com.yau.doubao_community.service.IUmsUserService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+
+import java.util.Map;
 
 import static com.yau.doubao_community.jwt.JwtUtil.USER_NAME;
 
@@ -38,7 +41,12 @@ public class BmsPostController extends BaseController {
         UmsUser user = umsUserService.getUserByUsername(userName);
         BmsPost topic = iBmsPostService.create(dto, user);
         return ApiResult.success(topic);
+    }
 
+    @GetMapping()
+    public ApiResult<Map<String, Object>> getDetail(@Param("id") String id) {
+        Map<String, Object> map = iBmsPostService.viewTopic(id);
+        return ApiResult.success(map);
     }
 
 

@@ -7,6 +7,8 @@ import com.yau.doubao_community.model.entity.BmsPost;
 import com.yau.doubao_community.model.entity.UmsUser;
 import com.yau.doubao_community.model.vo.PostVO;
 
+import java.util.Map;
+
 public interface IBmsPostService extends IService<BmsPost> {
 
     /**
@@ -25,4 +27,11 @@ public interface IBmsPostService extends IService<BmsPost> {
      * @return
      */
     BmsPost create(CreateTopicDTO dto, UmsUser user);
+
+    /**
+     * 查看帖子详情
+     * @param id
+     * @return
+     */
+    Map<String, Object> viewTopic(String id);
 }

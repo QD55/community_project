@@ -2,6 +2,7 @@ package com.yau.doubao_community.service.impl;
 
 import cn.hutool.core.lang.Assert;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.vdurmont.emoji.EmojiParser;
@@ -14,8 +15,11 @@ import com.yau.doubao_community.model.entity.BmsTag;
 import com.yau.doubao_community.model.entity.BmsTopicTag;
 import com.yau.doubao_community.model.entity.UmsUser;
 import com.yau.doubao_community.model.vo.PostVO;
+import com.yau.doubao_community.model.vo.ProfileVO;
 import com.yau.doubao_community.service.IBmsPostService;
 import com.yau.doubao_community.service.IBmsTagService;
+import com.yau.doubao_community.service.IBmsTopicTagService;
+import com.yau.doubao_community.service.IUmsUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -23,8 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +42,9 @@ public class IBmsPostServiceImpl  extends ServiceImpl<BmsTopicMapper, BmsPost> i
     @Autowired
     @Lazy
     private IBmsTagService iBmsTagService;
+
+    @Autowired
+    private IUmsUserService iUmsUserService;
 
     @Autowired
     private com.yau.doubao_community.service.IBmsTopicTagService IBmsTopicTagService;
@@ -88,5 +94,33 @@ public class IBmsPostServiceImpl  extends ServiceImpl<BmsTopicMapper, BmsPost> i
 
         return topic;
 
+    }
+
+    @Override
+    public Map<String, Object> viewTopic(String id) {
+        Map<String, Object> map = new HashMap<>(16);
+        BmsPost topic = this.baseMapper.selectById(id);
+        Assert.notNull(topic, "当前话题不存在,或已被作者删除");
+        // 查询话题详情
+        topic.setView(topic.getView() + 1);
+        this.baseMapper.updateById(topic);
+        // emoji转码
+        topic.setContent(EmojiParser.parseToUnicode(topic.getContent()));
+        map.put("topic", topic);
+        // 标签
+        QueryWrapper<BmsTopicTag> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(BmsTopicTag::getTopicId, topic.getId());
+        Set<String> set = new HashSet<>();
+        for (BmsTopicTag articleTag : IBmsTopicTagService.list(wrapper)) {
+            set.add(articleTag.getTagId());
+        }
+        List<BmsTag> tags = iBmsTagService.listByIds(set);
+        map.put("tags", tags);
+
+        // 作者
+        ProfileVO user = iUmsUserService.getUserProfile(topic.getUserId());
+        map.put("user", user);
+
+        return map;
     }
 }

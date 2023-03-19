@@ -4,13 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yau.doubao_community.common.exception.ApiAsserts;
 import com.yau.doubao_community.jwt.JwtUtil;
+import com.yau.doubao_community.mapper.BmsTopicMapper;
 import com.yau.doubao_community.mapper.UmsUserMapper;
 import com.yau.doubao_community.model.dto.LoginDTO;
 import com.yau.doubao_community.model.dto.RegisterDTO;
 import com.yau.doubao_community.model.entity.UmsUser;
+import com.yau.doubao_community.model.vo.ProfileVO;
 import com.yau.doubao_community.service.IUmsUserService;
 import com.yau.doubao_community.utils.MD5Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -21,6 +25,10 @@ import java.util.Date;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class IUmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser> implements IUmsUserService {
+
+    @Autowired
+    private BmsTopicMapper bmsTopicMapper;
+
     @Override
     public UmsUser executeRegister(RegisterDTO dto) {
         // 查询用户名是否重复
@@ -65,5 +73,13 @@ public class IUmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser> imp
         }
 
         return token;
+    }
+
+    @Override
+    public ProfileVO getUserProfile(String id) {
+        ProfileVO profile = new ProfileVO();
+        UmsUser user = baseMapper.selectById(id);
+        BeanUtils.copyProperties(user, profile);
+        return profile;
     }
 }
