@@ -2,7 +2,7 @@ package com.yau.doubao_community.controller;
 
 import com.yau.doubao_community.common.api.ApiResult;
 import com.yau.doubao_community.model.entity.BmsPromotion;
-import com.yau.doubao_community.service.IBmsPtomotionService;
+import com.yau.doubao_community.service.IBmsPromotionService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +15,7 @@ import java.util.List;
 public class BmsPromotionController extends BaseController{
 
     @Resource
-    private IBmsPtomotionService bmsPtomotionService;
+    private IBmsPromotionService bmsPtomotionService;
 
     @GetMapping("/all")
     public ApiResult<List<BmsPromotion>> getPromotion() {
