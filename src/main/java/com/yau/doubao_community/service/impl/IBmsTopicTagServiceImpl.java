@@ -10,6 +10,7 @@ import com.yau.doubao_community.service.IBmsTopicTagService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class IBmsTopicTagServiceImpl extends ServiceImpl<BmsTopicTagMapper, BmsTopicTag>
@@ -34,5 +35,10 @@ public class IBmsTopicTagServiceImpl extends ServiceImpl<BmsTopicTagMapper, BmsT
             topicTag.setTagId(tag.getId());
             this.baseMapper.insert(topicTag);
         });
+    }
+
+    @Override
+    public Set<String> selectTopicIdsByTagId(String id) {
+        return this.baseMapper.getTopicIdsByTagId(id);
     }
 }
