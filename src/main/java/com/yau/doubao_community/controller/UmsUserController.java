@@ -1,10 +1,15 @@
 package com.yau.doubao_community.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yau.doubao_community.common.api.ApiResult;
 import com.yau.doubao_community.model.dto.LoginDTO;
 import com.yau.doubao_community.model.dto.RegisterDTO;
+import com.yau.doubao_community.model.entity.BmsPost;
 import com.yau.doubao_community.model.entity.UmsUser;
+import com.yau.doubao_community.service.IBmsPostService;
 import com.yau.doubao_community.service.IUmsUserService;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +25,8 @@ public class UmsUserController extends BaseController{
 
     @Resource
     private IUmsUserService iUmsUserService;
+    @Resource
+    private IBmsPostService iBmsPostService;
 
     /**
      * 用户注册
@@ -63,5 +70,19 @@ public class UmsUserController extends BaseController{
     @GetMapping("/logout")
     public ApiResult<Object> logOut() {
         return ApiResult.success("退出登录成功");
+    }
+
+    @GetMapping("/{username}")
+    public ApiResult<Map<String, Object>> getUserByName(@PathVariable("username") String userName,
+                                                        @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
+                                                        @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        Map<String, Object> map = new HashMap<>(16);
+        UmsUser user = iUmsUserService.getUserByUsername(userName);
+        Assert.notNull(user, "用户不存在");
+        Page<BmsPost> page = iBmsPostService.page(new Page<>(pageNo, size),
+                new LambdaQueryWrapper<BmsPost>().eq(BmsPost::getUserId, user.getId()));
+        map.put("user", user);
+        map.put("topics", page);
+        return ApiResult.success(map);
     }
 }
